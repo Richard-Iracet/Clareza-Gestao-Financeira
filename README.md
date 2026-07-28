@@ -69,7 +69,7 @@ Após o primeiro login:
 - sem estado remoto: confirme **Enviar dados locais**;
 - dados iguais: a aplicação continua automaticamente;
 - dados diferentes: exporte as duas versões e escolha explicitamente;
-- estado remoto existente em navegador vazio: escolha a versão remota;
+- estado remoto existente em navegador sem estado local: a aplicação valida e hidrata automaticamente a versão remota;
 - início offline: o cache continua utilizável e a comparação ocorre quando a conexão retorna.
 
 Dados legados nunca são apagados antes de uma cópia por usuário ser escrita e verificada.

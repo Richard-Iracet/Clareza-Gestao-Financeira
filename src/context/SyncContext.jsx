@@ -5,13 +5,14 @@ import { createLocalFinanceRepository } from '../infrastructure/storage/localFin
 import { createRemoteFinanceRepository } from '../infrastructure/storage/remoteFinanceRepository.js'
 import { createMultiTabLease } from '../domain/sync/multiTabLease.js'
 import { SYNC_ERROR_CODES } from '../domain/sync/syncErrors.js'
-import { resolveFirstSync } from '../domain/sync/firstSync.js'
-import { checksum, createSnapshot, stableStringify } from '../utils/snapshot.js'
+import { resolveFirstSync, selectBootstrapLocalData } from '../domain/sync/firstSync.js'
+import { checksum, createSnapshot } from '../utils/snapshot.js'
 import { getBrowserStorage } from '../utils/storage.js'
 
 const SyncContext = createContext(null)
 const ownerId = globalThis.crypto?.randomUUID?.() || `${Date.now()}-${Math.random()}`
 const dataFingerprint = (data) => checksum(data)
+const getPendingData = (pending) => pending?.data || pending?.snapshot?.data
 
 export function SyncProvider({ children }) {
   const auth = useAuth()
@@ -28,6 +29,7 @@ export function SyncProvider({ children }) {
   const lastSyncedFingerprintRef = useRef(null)
   const queueRef = useRef(null)
   const savingRef = useRef(false)
+  const applyingRemoteRef = useRef(false)
   const bootstrapStartedRef = useRef(false)
   const channelRef = useRef(null)
   const retryTimerRef = useRef(null)
@@ -35,15 +37,25 @@ export function SyncProvider({ children }) {
   const stateRef = useRef(finance.financeState)
   stateRef.current = finance.financeState
 
-  const acceptRemote = useCallback((remote) => {
-    localRepository.saveSessionBackup(createSnapshot(stateRef.current, { revision: 1 }))
+  const acceptRemote = useCallback((remote, localData = stateRef.current) => {
+    const backup = localRepository.savePreRemoteBackup(createSnapshot(localData, { revision: 1 }))
+    if (!backup.success) {
+      setSync((current) => ({
+        ...current,
+        status: current.conflict ? 'conflict' : 'error',
+        message: `A versão local não foi substituída porque a cópia de segurança falhou. ${backup.message}`,
+      }))
+      return false
+    }
     localRepository.saveRemoteCache(remote.snapshot)
     localRepository.clearPending()
     localRepository.clearConflict()
     remoteRevisionRef.current = remote.revision
     lastSyncedFingerprintRef.current = dataFingerprint(remote.snapshot.data)
+    applyingRemoteRef.current = true
     finance.replaceFinanceState(remote.snapshot.data)
     setSync({ status: 'synchronized', lastSyncedAt: remote.updatedAt || remote.snapshot.createdAt, message: null, conflict: null })
+    return true
   }, [finance.replaceFinanceState, localRepository])
 
   const setConflict = useCallback((localSnapshot, remote) => {
@@ -57,8 +69,7 @@ export function SyncProvider({ children }) {
     const delay = Math.min(30000, 1000 * (2 ** retryCountRef.current))
     retryCountRef.current += 1
     retryTimerRef.current = setTimeout(() => {
-      const pending = localRepository.loadPending().data
-      queueRef.current = pending?.data || pending?.snapshot?.data || stateRef.current
+      queueRef.current = stateRef.current
       void flushRef.current?.()
     }, delay)
   }, [localRepository])
@@ -104,8 +115,7 @@ export function SyncProvider({ children }) {
           setSync((current) => ({ ...current, status: 'error', message: loadError.message }))
         }
       } else {
-        const pending = localRepository.loadPending().data
-        queueRef.current = pending?.data || pending?.snapshot?.data || stateRef.current
+        queueRef.current = stateRef.current
         setSync((current) => ({ ...current, status: navigator.onLine ? 'error' : 'offline', message: error.message }))
         scheduleRetry()
       }
@@ -124,10 +134,16 @@ export function SyncProvider({ children }) {
   }, [flush, localRepository])
 
   useEffect(() => {
-    if (bootstrapStartedRef.current || finance.persistence.status === 'saving' || finance.persistence.pendingChanges) return
+    if (bootstrapStartedRef.current || (finance.hasLocalState && (finance.persistence.status === 'saving' || finance.persistence.pendingChanges))) return
     bootstrapStartedRef.current = true
     const bootstrap = async () => {
-      const localSnapshot = createSnapshot(stateRef.current, { revision: 1 })
+      const pending = localRepository.loadPending()
+      if (!pending.success) {
+        setSync({ status: 'error', lastSyncedAt: null, message: pending.message, conflict: null })
+        return
+      }
+      const initialPendingData = getPendingData(pending.data)
+      if (!finance.hasLocalState && initialPendingData) finance.replaceFinanceState(initialPendingData)
       if (!navigator.onLine) {
         const cached = localRepository.loadRemoteCache()
         if (cached.success && cached.data) remoteRevisionRef.current = cached.data.revision
@@ -136,18 +152,40 @@ export function SyncProvider({ children }) {
       }
       try {
         const remote = await remoteRepository.load()
-        const resolution = resolveFirstSync(localSnapshot, remote)
+        const latestPending = localRepository.loadPending()
+        if (!latestPending.success) throw new Error(latestPending.message)
+        const pendingData = getPendingData(latestPending.data)
+        const localData = selectBootstrapLocalData({
+          currentData: stateRef.current,
+          pendingData,
+          hasLocalState: finance.hasLocalState,
+        })
+        const localSnapshot = createSnapshot(localData, { revision: 1 })
+        const hasLocalState = finance.hasLocalState || Boolean(pendingData)
+        const resolution = resolveFirstSync(localSnapshot, remote, { hasLocalState })
         if (resolution.action === 'confirm-upload-local') {
+          if (!finance.hasLocalState && pendingData) finance.replaceFinanceState(pendingData)
           setSync({ status: 'setup-required', lastSyncedAt: null, message: 'Dados locais encontrados. Confirme o primeiro envio para a nuvem.', conflict: { localSnapshot, remoteSnapshot: null, remoteRevision: 0 } })
+          return
+        }
+        if (resolution.action === 'hydrate-remote') {
+          acceptRemote(remote)
+          return
+        }
+        if (resolution.action === 'synchronized' && !finance.hasLocalState && pendingData) {
+          acceptRemote(remote, pendingData)
           return
         }
         remoteRevisionRef.current = remote.revision
         localRepository.saveRemoteCache(remote.snapshot)
         if (resolution.action === 'synchronized') {
+          localRepository.clearPending()
+          localRepository.clearConflict()
           lastSyncedFingerprintRef.current = dataFingerprint(remote.snapshot.data)
           setSync({ status: 'synchronized', lastSyncedAt: remote.updatedAt || remote.snapshot.createdAt, message: null, conflict: null })
           return
         }
+        if (!finance.hasLocalState && pendingData) finance.replaceFinanceState(pendingData)
         setConflict(localSnapshot, remote)
       } catch (error) {
         const cached = localRepository.loadRemoteCache()
@@ -156,11 +194,16 @@ export function SyncProvider({ children }) {
       }
     }
     void bootstrap()
-  }, [finance.persistence.pendingChanges, finance.persistence.status, localRepository, reconnectTick, remoteRepository, setConflict])
+  }, [acceptRemote, finance.hasLocalState, finance.persistence.pendingChanges, finance.persistence.status, localRepository, reconnectTick, remoteRepository, setConflict])
 
   useEffect(() => {
     if (!['synchronized', 'pending', 'saving', 'offline', 'error'].includes(sync.status)) return
     const fingerprint = dataFingerprint(finance.financeState)
+    if (applyingRemoteRef.current) {
+      applyingRemoteRef.current = false
+      lastSyncedFingerprintRef.current = fingerprint
+      return
+    }
     if (!lastSyncedFingerprintRef.current) {
       lastSyncedFingerprintRef.current = fingerprint
       return
@@ -172,8 +215,9 @@ export function SyncProvider({ children }) {
 
   useEffect(() => {
     const online = () => {
-      if (queueRef.current || localRepository.loadPending().data) {
-        if (!queueRef.current) queueRef.current = localRepository.loadPending().data?.data || stateRef.current
+      const pending = localRepository.loadPending().data
+      if (queueRef.current || pending) {
+        if (!queueRef.current) queueRef.current = stateRef.current
         void flush()
       } else if (remoteRevisionRef.current === 0) {
         bootstrapStartedRef.current = false
@@ -220,16 +264,30 @@ export function SyncProvider({ children }) {
   const useRemote = useCallback(() => {
     const remoteSnapshot = sync.conflict?.remoteSnapshot
     if (!remoteSnapshot) return
-    acceptRemote({ snapshot: remoteSnapshot, revision: sync.conflict.remoteRevision, updatedAt: remoteSnapshot.createdAt })
+    acceptRemote(
+      { snapshot: remoteSnapshot, revision: sync.conflict.remoteRevision, updatedAt: remoteSnapshot.createdAt },
+      stateRef.current,
+    )
   }, [acceptRemote, sync.conflict])
 
   const retry = useCallback(() => {
-    queueRef.current = localRepository.loadPending().data?.data || stateRef.current
-    void flush()
+    const pending = localRepository.loadPending().data
+    if (pending) {
+      queueRef.current = stateRef.current
+      void flush()
+      return
+    }
+    bootstrapStartedRef.current = false
+    setSync((current) => ({ ...current, status: 'loading', message: 'Comparando novamente os dados locais e remotos.' }))
+    setReconnectTick((value) => value + 1)
   }, [flush, localRepository])
 
   const value = useMemo(() => ({ ...sync, uploadLocal, useRemote, retry }), [sync, uploadLocal, useRemote, retry])
-  return <SyncContext.Provider value={value}>{children}</SyncContext.Provider>
+  return <SyncContext.Provider value={value}>
+    {sync.status === 'loading' && !finance.hasLocalState
+      ? <main className="auth-screen"><section className="auth-card" role="status"><h1>Clareza</h1><p>Carregando seus dados com segurança…</p></section></main>
+      : children}
+  </SyncContext.Provider>
 }
 
 export const useSync = () => {

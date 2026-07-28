@@ -21,7 +21,7 @@ function AuthenticatedApplication() {
   const auth = useAuth();
   const activation = useMemo(() => activateUserSession(getBrowserStorage(), auth.user.id), [auth.user.id]);
   if (!activation.success) return <main className="auth-screen"><section className="auth-card" role="alert"><h1>Cache local indisponível</h1><p>{activation.message}</p></section></main>;
-  return <FinanceProvider><SyncProvider><AppLayout /></SyncProvider></FinanceProvider>;
+  return <FinanceProvider hasLocalState={activation.hasLocalState}><SyncProvider><AppLayout /></SyncProvider></FinanceProvider>;
 }
 
 export default function App() {

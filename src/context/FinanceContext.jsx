@@ -2,7 +2,7 @@ import { createContext, useCallback, useContext, useEffect, useMemo, useRef, use
 import { initialCategories } from '../data/categories'
 import { initialCards } from '../data/cards'
 import { initialTransactions } from '../data/expenses'
-import { costCenters } from '../data/settings'
+import { costCenters as defaultCostCenters } from '../data/settings'
 import { assignTransactionToInvoice, buildInvoices, createRemainingCardInstallments, getInvoiceDates, isDuplicateInstallment } from '../utils/invoiceCalculations'
 import { runInvoiceMigration } from '../utils/invoiceMigration'
 import { appendInvoicePayment, reopenInvoiceRecord } from '../utils/invoiceReconciliation'
@@ -54,11 +54,11 @@ const detachForManualOccurrenceEdit = (record, operationId, createdAt = new Date
   }
 }
 
-export function FinanceProvider({ children }) {
+export function FinanceProvider({ children, hasLocalState = true }) {
   const migration = useMemo(() => runInvoiceMigration(initialTransactions, initialCards), [])
   const backend = useMemo(() => getBrowserStorage(), [])
   const bootstrap = useMemo(() => loadFinanceState(backend, {
-    transactions: migration.transactions, cards: migration.cards, accounts: storage.getAccounts([]), transfers: storage.getTransfers([]), recurrences: storage.getRecurrences([]), alertStates: storage.getAlertStates([]), categories: storage.getCategories(initialCategories), invoiceRecords: storage.getInvoicePayments([]), costCenters,
+    transactions: migration.transactions, cards: migration.cards, accounts: storage.getAccounts([]), transfers: storage.getTransfers([]), recurrences: storage.getRecurrences([]), alertStates: storage.getAlertStates([]), categories: storage.getCategories(initialCategories), invoiceRecords: storage.getInvoicePayments([]), costCenters: defaultCostCenters,
     filters: readStorage(STORAGE_KEYS.filters, defaultFilters, backend).data || defaultFilters, userSettings: readStorage(STORAGE_KEYS.userSettings, {}, backend).data || {}, migrations: { financeDataVersion: storage.getDataVersion() },
   }), [backend, migration])
   const resolvedData = bootstrap.success ? bootstrap.snapshot.data : { transactions: migration.transactions, cards: migration.cards, accounts: storage.getAccounts([]), transfers: storage.getTransfers([]), recurrences: storage.getRecurrences([]), alertStates: storage.getAlertStates([]), categories: storage.getCategories(initialCategories), invoiceRecords: storage.getInvoicePayments([]), filters: defaultFilters }
@@ -75,7 +75,9 @@ export function FinanceProvider({ children }) {
   const [transactions, setTransactions] = useState(initialData.transactions)
   const [invoicePayments, setInvoicePayments] = useState(initialData.invoiceRecords)
   const [categories, setCategories] = useState(initialData.categories)
+  const [storedCostCenters, setStoredCostCenters] = useState(Array.isArray(initialData.costCenters) ? initialData.costCenters : defaultCostCenters)
   const [filters, setFilters] = useState({ ...defaultFilters, ...(initialData.filters || {}) })
+  const [userSettings, setUserSettings] = useState(initialData.userSettings && typeof initialData.userSettings === 'object' && !Array.isArray(initialData.userSettings) ? initialData.userSettings : {})
   const [migrationMetadata, setMigrationMetadata] = useState(initialData.migrations || {})
   const { persistence, setPersistence, setRecoveryOverride, stateRef, initialFingerprintRef, enqueuePersistence, retryPersistence } = usePersistenceQueue({ backend, migrationError: migration.error, bootstrap, initialData })
   const processedOperationsRef = useRef(new Set(initialData.transactions.map((item) => item.operationId).filter(Boolean)))
@@ -98,9 +100,9 @@ export function FinanceProvider({ children }) {
   const alerts = useMemo(() => buildFinanceAlerts({ transactions, transfers, invoices, invoiceRecords: invoicePayments, accounts, cards, recurrences, alertStates }).visible, [transactions, transfers, invoices, invoicePayments, accounts, cards, recurrences, alertStates])
   const financeState = useMemo(() => ({
     transactions, cards, accounts, transfers, recurrences, alertStates, categories,
-    invoiceRecords: invoicePayments, costCenters, filters,
-    userSettings: initialData.userSettings || {}, migrations: migrationMetadata,
-  }), [transactions, cards, accounts, transfers, recurrences, alertStates, categories, invoicePayments, filters, migrationMetadata])
+    invoiceRecords: invoicePayments, costCenters: storedCostCenters, filters,
+    userSettings, migrations: migrationMetadata,
+  }), [transactions, cards, accounts, transfers, recurrences, alertStates, categories, invoicePayments, storedCostCenters, filters, userSettings, migrationMetadata])
 
   const startEmptyAfterConfirmation = useCallback(() => { setTransactions([]); setCards([]); setAccounts([]); setTransfers([]); setRecurrences([]); setAlertStates([]); setCategories([]); setInvoicePayments([]); setFilters(defaultFilters); setRecoveryOverride(true); setPersistence((value) => ({ ...value, status: 'unsaved', pendingChanges: true, errorType: null, message: 'Estado vazio confirmado; aguardando persistência.' })) }, [])
   const replaceFinanceState = useCallback((data) => {
@@ -112,17 +114,19 @@ export function FinanceProvider({ children }) {
     setAlertStates(Array.isArray(data.alertStates) ? data.alertStates : [])
     setCategories(Array.isArray(data.categories) ? data.categories : [])
     setInvoicePayments(Array.isArray(data.invoiceRecords) ? data.invoiceRecords : [])
+    setStoredCostCenters(Array.isArray(data.costCenters) ? data.costCenters : defaultCostCenters)
     setFilters({ ...defaultFilters, ...(data.filters || {}) })
+    setUserSettings(data.userSettings && typeof data.userSettings === 'object' && !Array.isArray(data.userSettings) ? data.userSettings : {})
     setMigrationMetadata(data.migrations || {})
   }, [])
 
   useEffect(() => {
-    const complete = { transactions, cards, accounts, transfers, recurrences, alertStates, categories, invoiceRecords: invoicePayments, costCenters, filters, userSettings: initialData.userSettings || {}, migrations: migrationMetadata }
+    const complete = { transactions, cards, accounts, transfers, recurrences, alertStates, categories, invoiceRecords: invoicePayments, costCenters: storedCostCenters, filters, userSettings, migrations: migrationMetadata }
     stateRef.current = complete
     if (initialFingerprintRef.current && stableStringify(complete) === initialFingerprintRef.current) return
     initialFingerprintRef.current = null
     enqueuePersistence(complete)
-  }, [transactions, cards, accounts, transfers, recurrences, alertStates, categories, invoicePayments, filters, migrationMetadata, enqueuePersistence])
+  }, [transactions, cards, accounts, transfers, recurrences, alertStates, categories, invoicePayments, storedCostCenters, filters, userSettings, migrationMetadata, enqueuePersistence])
   useEffect(() => {
     setTransactions((current) => {
       let changed = false
@@ -798,7 +802,7 @@ export function FinanceProvider({ children }) {
 
   const value = useMemo(() => ({
     transactions, filteredTransactions, transfers, filteredTransfers, recurrences, alertStates, alerts,
-    categories, cards, accounts, invoices, invoicePayments, indexes, recurrenceIndexes, filters, setFilters, defaultFilters,
+    categories, cards, accounts, invoices, invoicePayments, indexes, recurrenceIndexes, costCenters: storedCostCenters, userSettings, filters, setFilters, defaultFilters,
     addTransaction, updateTransaction, deleteTransaction, bulkUpdateTransactions, bulkDeleteTransactions, togglePaid,
     addAccount, updateAccount, archiveAccount, restoreAccount, deleteAccount,
     addTransfer, updateScheduledTransfer, completeTransfer, cancelTransfer, reverseTransfer,
@@ -814,8 +818,8 @@ export function FinanceProvider({ children }) {
     transferMigration: Number(migrationMetadata.transferMigrationVersion || 0), runTransferMigration,
     recurrenceMigration: Number(migrationMetadata.recurrenceMigrationVersion || 0), runRecurrenceMigration,
     resolveConfirmedDuplicate, persistence, retryPersistence, startEmptyAfterConfirmation,
-    financeState, replaceFinanceState,
-  }), [transactions, filteredTransactions, transfers, filteredTransfers, recurrences, alertStates, alerts, categories, cards, accounts, invoices, invoicePayments, indexes, recurrenceIndexes, filters, migrationMetadata, persistence, retryPersistence, startEmptyAfterConfirmation, financeState, replaceFinanceState])
+    financeState, replaceFinanceState, hasLocalState,
+  }), [transactions, filteredTransactions, transfers, filteredTransfers, recurrences, alertStates, alerts, categories, cards, accounts, invoices, invoicePayments, indexes, recurrenceIndexes, storedCostCenters, userSettings, filters, migrationMetadata, persistence, retryPersistence, startEmptyAfterConfirmation, financeState, replaceFinanceState, hasLocalState])
   return <FinanceContext.Provider value={value}>{children}</FinanceContext.Provider>
 }
 

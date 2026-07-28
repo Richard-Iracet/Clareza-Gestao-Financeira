@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">Clareza</string>
+    <string name="title_activity_main">Clareza</string>
+    <string name="package_name">com.clareza.financeiro</string>
+    <string name="custom_url_scheme">com.clareza.financeiro</string>
+</resources>

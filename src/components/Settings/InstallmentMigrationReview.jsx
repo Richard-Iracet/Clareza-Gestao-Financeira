@@ -1,0 +1,8 @@
+import { useMemo, useState } from 'react'
+import { useFinance } from '../../context/FinanceContext'
+import { analyzeInstallmentIdentity } from '../../utils/identity'
+
+export default function InstallmentMigrationReview() {
+  const { transactions, installmentIdentityMigration, runInstallmentIdentityMigration } = useFinance(); const report = useMemo(() => analyzeInstallmentIdentity(transactions), [transactions]); const [result, setResult] = useState(null)
+  return <article className="settings-card"><div className="settings-icon">#</div><h3>Identidade dos parcelamentos</h3><p>Migração v1: somente registros ligados por um identificador legado explícito são elegíveis.</p><dl className="compact-stats"><div><dt>Grupos confiáveis</dt><dd>{report.reliableGroups}</dd></div><div><dt>Grupos legados</dt><dd>{report.legacyGroups}</dd></div><div><dt>Sem grupo</dt><dd>{report.missing}</dd></div><div><dt>Ambíguos</dt><dd>{report.ambiguous.length + report.collisions.length}</dd></div></dl><button className="outline-button" disabled={installmentIdentityMigration >= 1 || report.predictedNewIds === 0} onClick={() => setResult(runInstallmentIdentityMigration())}>{installmentIdentityMigration >= 1 ? 'Migração já executada' : 'Migrar somente casos seguros'}</button>{report.ambiguous.length > 0 && <details><summary>Revisar casos ambíguos</summary>{report.ambiguous.map((item) => <p key={item.id}>{item.description} · {item.installmentNumber}/{item.installmentTotal} · mantido sem alteração</p>)}</details>}{result && <p className="settings-feedback success">{result.groupsUpdated} grupo(s) atualizado(s); {result.unchanged} registro(s) preservado(s).</p>}</article>
+}

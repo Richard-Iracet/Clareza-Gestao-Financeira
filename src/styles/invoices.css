@@ -1,0 +1,329 @@
+.invoices-heading {
+  align-items: flex-end;
+}
+
+.invoices-section-description {
+  margin: 8px 0 0;
+  color: var(--muted);
+  font-size: 0.8rem;
+  line-height: 1.5;
+}
+
+.invoice-month-navigation {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  align-items: stretch;
+  gap: 10px;
+  margin-bottom: 18px;
+  padding: 8px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  box-shadow: var(--shadow-soft);
+}
+
+.invoice-month-list {
+  display: flex;
+  align-items: stretch;
+  gap: 8px;
+  min-width: 0;
+
+  overflow-x: auto;
+  overflow-y: hidden; /* <-- adiciona isso */
+
+  scroll-behavior: smooth;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+.invoice-month-list::-webkit-scrollbar:vertical {
+  display: none;
+}
+
+.invoice-month-list::-webkit-scrollbar {
+  height: 5px;
+}
+
+.invoice-month-list::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.invoice-month-list::-webkit-scrollbar-thumb {
+  background: var(--border-strong);
+  border-radius: 999px;
+}
+
+.invoice-month-option {
+  position: relative;
+  flex: 1 0 150px;
+  display: grid;
+  place-items: center;
+  align-content: center;
+  gap: 4px;
+  min-height: 78px;
+  padding: 11px 16px;
+  color: var(--text);
+  background: transparent;
+  border: 1px solid transparent;
+  border-radius: 15px;
+  transition:
+    color 0.2s ease,
+    background 0.2s ease,
+    border-color 0.2s ease,
+    transform 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+.invoice-month-option:hover {
+  color: var(--purple);
+  background: var(--surface-soft);
+  border-color: var(--border);
+  transform: translateY(-1px);
+}
+
+.invoice-month-option.active {
+  color: white;
+  background: linear-gradient(145deg, var(--purple), var(--purple-dark));
+  border-color: transparent;
+  box-shadow: 0 10px 22px rgba(113, 61, 224, 0.25);
+}
+
+.invoice-month-option.active::after {
+  content: "";
+  position: absolute;
+  right: 12px;
+  bottom: -9px;
+  left: 12px;
+  height: 2px;
+  background: var(--purple);
+  border-radius: 999px;
+}
+
+.invoice-month-option strong {
+  font-size: 0.78rem;
+  text-align: center;
+  text-transform: capitalize;
+}
+
+.invoice-current-label {
+  font-size: 0.62rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.invoice-month-count {
+  display: grid;
+  place-items: center;
+  min-width: 25px;
+  height: 25px;
+  padding: 0 7px;
+  color: var(--text-soft);
+  background: var(--surface-muted);
+  border-radius: 999px;
+  font-size: 0.68rem;
+  font-weight: 800;
+}
+
+.invoice-month-option.active .invoice-month-count {
+  color: white;
+  background: rgba(255, 255, 255, 0.18);
+}
+
+.invoice-month-arrow {
+  align-self: center;
+  display: grid;
+  place-items: center;
+  width: 42px;
+  height: 42px;
+  padding: 0;
+  color: var(--text-soft);
+  background: var(--surface-muted);
+  border: 1px solid var(--border);
+  border-radius: 50%;
+  font-size: 1.45rem;
+  line-height: 1;
+  transition:
+    color 0.2s ease,
+    background 0.2s ease,
+    border-color 0.2s ease,
+    transform 0.2s ease;
+}
+
+.invoice-month-arrow:hover:not(:disabled) {
+  color: var(--purple);
+  background: var(--purple-surface);
+  border-color: var(--purple);
+  transform: scale(1.04);
+}
+
+.invoice-month-arrow:disabled {
+  cursor: not-allowed;
+  opacity: 0.35;
+}
+
+.invoice-selected-period {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  margin: 0 0 18px;
+  color: var(--muted);
+  font-size: 0.82rem;
+}
+
+.invoice-selected-period strong {
+  color: var(--purple);
+  font-size: 0.82rem;
+  text-transform: capitalize;
+}
+
+.invoice-period-icon {
+  display: grid;
+  place-items: center;
+  width: 25px;
+  height: 25px;
+  margin-right: 2px;
+  color: var(--purple);
+  background: var(--purple-soft);
+  border-radius: 8px;
+  font-size: 0.72rem;
+}
+
+.invoice-list-notice {
+  display: flex;
+  align-items: center;
+  gap: 13px;
+  margin-top: 18px;
+  padding: 15px 17px;
+  color: var(--text-soft);
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 15px;
+  box-shadow: var(--shadow-soft);
+}
+
+.invoice-list-notice > span {
+  flex: 0 0 34px;
+  display: grid;
+  place-items: center;
+  width: 34px;
+  height: 34px;
+  color: white;
+  background: linear-gradient(145deg, var(--purple), var(--purple-dark));
+  border-radius: 50%;
+  font-family: Manrope, sans-serif;
+  font-weight: 800;
+}
+
+.invoice-list-notice strong {
+  display: block;
+  margin-bottom: 3px;
+  font-size: 0.75rem;
+}
+
+.invoice-list-notice p {
+  margin: 0;
+  color: var(--muted);
+  font-size: 0.7rem;
+  line-height: 1.45;
+}
+
+.invoice-empty-state {
+  margin-top: 4px;
+}
+
+:root[data-theme="dark"] .invoice-month-navigation,
+:root[data-theme="dark"] .invoice-list-notice {
+  background: var(--surface);
+  border-color: var(--border);
+}
+
+:root[data-theme="dark"] .invoice-month-option {
+  color: var(--text);
+}
+
+:root[data-theme="dark"] .invoice-month-option:hover {
+  color: var(--purple);
+  background: var(--surface-soft);
+  border-color: var(--border-strong);
+}
+
+:root[data-theme="dark"] .invoice-month-option.active {
+  color: white;
+  background:
+    radial-gradient(
+      circle at top right,
+      rgba(255, 255, 255, 0.18),
+      transparent 45%
+    ),
+    linear-gradient(145deg, #905cf5, #6734cf);
+  box-shadow: 0 12px 28px rgba(87, 42, 170, 0.38);
+}
+
+:root[data-theme="dark"] .invoice-month-arrow {
+  color: var(--text-soft);
+  background: var(--surface-muted);
+  border-color: var(--border);
+}
+
+:root[data-theme="dark"] .invoice-month-count {
+  color: var(--text-soft);
+  background: #2b2631;
+}
+
+:root[data-theme="dark"] .invoice-month-option.active .invoice-month-count {
+  color: white;
+  background: rgba(255, 255, 255, 0.18);
+}
+
+@media (max-width: 680px) {
+  .invoices-heading {
+    align-items: flex-start;
+  }
+
+  .invoices-heading .heading-actions {
+    width: 100%;
+    justify-content: space-between;
+  }
+
+  .invoice-month-navigation {
+    grid-template-columns: 36px minmax(0, 1fr) 36px;
+    gap: 6px;
+    padding: 7px;
+    border-radius: 16px;
+  }
+
+  .invoice-month-arrow {
+    width: 36px;
+    height: 36px;
+    font-size: 1.25rem;
+  }
+
+  .invoice-month-option {
+    flex-basis: 132px;
+    min-height: 72px;
+    padding: 9px 12px;
+  }
+
+  .invoice-selected-period {
+    flex-wrap: wrap;
+  }
+
+  .invoice-list-notice {
+    align-items: flex-start;
+  }
+}
+
+@media (max-width: 420px) {
+  .invoice-month-navigation {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .invoice-month-arrow {
+    display: none;
+  }
+
+  .invoice-month-option {
+    flex-basis: 124px;
+  }
+}

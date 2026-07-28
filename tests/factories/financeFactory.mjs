@@ -1,0 +1,3 @@
+export const createCard = (overrides = {}) => ({ id: 'card-1', name: 'Cartão Teste', closingDay: 25, dueDay: 3, ...overrides })
+export const createTransaction = (overrides = {}) => ({ id: 'transaction-1', description: 'Mercado', amount: 100, type: 'expense', status: 'pending', category: 'Casa', date: '2026-08-01', dueDate: '2026-08-03', installmentNumber: 1, installmentTotal: 1, ...overrides })
+export const createFinanceState = (overrides = {}) => ({ transactions: [createTransaction()], cards: [createCard()], accounts: [], transfers: [], categories: ['Casa'], invoiceRecords: [], costCenters: ['Pessoal'], filters: {}, userSettings: {}, migrations: { financeDataVersion: 4 }, ...overrides })

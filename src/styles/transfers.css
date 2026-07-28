@@ -1,0 +1,49 @@
+.transfer-form { padding: 24px; }
+.transfer-form > .form-actions { display: flex; justify-content: flex-end; gap: 10px; margin-top: 18px; }
+.transfer-form .section-heading { margin-bottom: 15px; }
+.transfer-form .section-heading .muted { margin: 7px 0 0; font-size: .78rem; }
+.transfer-form .field-hint { display: block; margin-top: 5px; color: var(--muted); font-size: .64rem; font-weight: 500; line-height: 1.35; }
+.transfer-preview { display: grid; gap: 4px; margin-top: 15px; padding: 12px; color: #4d397e; background: #f2edfc; border: 1px solid #e2d9f8; border-radius: 11px; }
+.transfer-preview span, .transfer-preview small, .transfer-destination-note, .transfer-feedback { font-size: .76rem; }
+.transfer-preview .critical-warning { margin-top: 5px; }
+.transfer-destination-note { margin: 12px 0 0; color: #625a70; }
+.transfer-feedback { margin: 14px 0 0; padding: 11px 13px; color: #62458f; background: #f3eefc; border: 1px solid #dfd4f5; border-radius: 10px; }
+
+.transfer-history { display: grid; gap: 10px; margin-top: 18px; }
+.transfer-history-heading { display: flex; align-items: end; justify-content: space-between; gap: 14px; padding-top: 4px; border-top: 1px solid #eee9f1; }
+.transfer-history-heading > div { padding-top: 15px; }
+.transfer-history-heading .eyebrow { margin-bottom: 4px; }
+.transfer-history-heading h3 { margin: 0; }
+.transfer-history-heading > span { color: var(--muted); font-size: .72rem; }
+.transfer-list { display: grid; gap: 8px; margin: 0; padding: 0; list-style: none; }
+.transfer-item { display: grid; grid-template-columns: auto minmax(0, 1fr) auto auto; align-items: center; gap: 14px; padding: 14px 16px; background: #fcfbff; border: 1px solid #e4dcf2; border-radius: 14px; }
+.transfer-item.cancelled, .transfer-item.reversed { opacity: .78; background: #faf9fb; }
+.transfer-symbol { display: grid; place-items: center; width: 32px; height: 32px; color: #6542a5; background: #eee7fb; border-radius: 10px; font-weight: 800; }
+.transfer-title { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+.transfer-title strong { font-size: .86rem; }
+.transfer-main > p, .transfer-main > small { margin: 4px 0 0; color: var(--muted); font-size: .7rem; }
+.transfer-notes { margin: 5px 0 0; color: #8b8294; font-size: .7rem; font-style: italic; }
+.transfer-status { padding: 3px 8px; border-radius: 20px; color: #62458f; background: #eee7fa; font-size: .61rem; font-weight: 700; }
+.transfer-status.completed { color: #177457; background: #e3f5ed; }
+.transfer-status.scheduled { color: #916019; background: #fff2da; }
+.transfer-status.cancelled, .transfer-status.reversed { color: #8b5260; background: #f8e9ed; }
+.transfer-value { min-width: 130px; text-align: right; }
+.transfer-value strong { display: block; color: #563791; font-size: .88rem; }
+.transfer-value span { color: var(--muted); font-size: .63rem; }
+.transfer-actions { display: flex; justify-content: flex-end; gap: 6px; flex-wrap: wrap; }
+.transfer-actions .outline-button, .transfer-actions .text-button { padding: 7px 9px; font-size: .68rem; }
+.transfer-empty-state { display: grid; gap: 5px; margin-top: 18px; padding: 20px; color: var(--muted); background: #fbf9fe; border: 1px dashed #dcd2eb; border-radius: 13px; text-align: center; font-size: .78rem; }
+.transfer-empty-state strong { color: #554b60; }
+.reversal-form { display: grid; gap: 10px; margin-top: 14px; text-align: left; }
+.reversal-form label { display: grid; gap: 6px; color: #605a66; font-size: .75rem; font-weight: 600; }
+.reversal-form input, .reversal-form textarea { width: 100%; padding: 10px 11px; color: #302b35; background: #fbfafc; border: 1px solid var(--border); border-radius: 9px; }
+.reversal-form textarea { resize: vertical; }
+
+@media (max-width: 680px) {
+  .transfer-form { padding: 20px; }
+  .transfer-form > .form-actions { position: sticky; bottom: 0; z-index: 4; margin: 18px -20px calc(-20px - env(safe-area-inset-bottom)); padding: 12px 20px calc(12px + env(safe-area-inset-bottom)); background: #fffffff2; border-top: 1px solid var(--border); backdrop-filter: blur(8px); }
+  .transfer-form > .form-actions .primary-button { flex: 1; }
+  .transfer-item { grid-template-columns: auto minmax(0, 1fr); align-items: start; }
+  .transfer-value { grid-column: 2; text-align: left; min-width: 0; }
+  .transfer-actions { grid-column: 1 / -1; justify-content: flex-start; }
+}

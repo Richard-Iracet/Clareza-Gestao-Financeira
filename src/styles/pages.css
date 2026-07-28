@@ -1,0 +1,485 @@
+/* =========================================================
+   ESTRUTURA BASE DAS PÁGINAS
+   ========================================================= */
+
+.page {
+  width: 100%;
+  min-width: 0;
+  display: grid;
+  gap: 38px;
+}
+
+.page-content {
+  width: 100%;
+  min-width: 0;
+  display: grid;
+  gap: 32px;
+}
+
+.page-section {
+  width: 100%;
+  min-width: 0;
+}
+
+.page-section + .page-section {
+  margin-top: 0;
+}
+
+.page-section-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 20px;
+  margin-bottom: 18px;
+}
+
+.page-section-heading {
+  min-width: 0;
+}
+
+.page-section-heading h2,
+.page-section-heading h3 {
+  margin: 0;
+}
+
+.page-section-heading h2 {
+  font-size: 1.28rem;
+}
+
+.page-section-heading h3 {
+  font-size: 1rem;
+}
+
+.page-section-description {
+  max-width: 720px;
+  margin: 6px 0 0;
+  color: var(--muted);
+  font-size: 0.78rem;
+  line-height: 1.55;
+}
+
+.page-section-actions {
+  flex: 0 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 9px;
+  flex-wrap: wrap;
+}
+
+/* =========================================================
+   CARDS E CONTAINERS GENÉRICOS
+   ========================================================= */
+
+.page-card {
+  min-width: 0;
+  padding: 24px;
+  color: var(--text);
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  box-shadow: var(--shadow-soft);
+}
+
+.page-card.compact {
+  padding: 18px;
+}
+
+.page-card.no-padding {
+  padding: 0;
+}
+
+.page-card-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 18px;
+  margin-bottom: 20px;
+}
+
+.page-card-header h2,
+.page-card-header h3 {
+  margin: 0;
+}
+
+.page-card-header p {
+  margin: 6px 0 0;
+  color: var(--muted);
+  font-size: 0.76rem;
+  line-height: 1.5;
+}
+
+.page-card-body {
+  min-width: 0;
+}
+
+/* =========================================================
+   GRADES REUTILIZÁVEIS
+   ========================================================= */
+
+.page-grid {
+  display: grid;
+  min-width: 0;
+  gap: 18px;
+}
+
+.page-grid.two-columns {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.page-grid.three-columns {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.page-grid.main-sidebar {
+  grid-template-columns: minmax(0, 2fr) minmax(260px, 0.8fr);
+  align-items: start;
+}
+
+.page-grid.sidebar-main {
+  grid-template-columns: minmax(260px, 0.8fr) minmax(0, 2fr);
+  align-items: start;
+}
+
+.page-stack {
+  display: grid;
+  min-width: 0;
+  gap: 18px;
+}
+
+/* =========================================================
+   CABEÇALHO INTERNO OPCIONAL
+   ========================================================= */
+
+.page-introduction {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 24px;
+  padding: 22px 24px;
+  background: linear-gradient(
+    135deg,
+    var(--surface) 0%,
+    var(--surface-soft) 100%
+  );
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  box-shadow: var(--shadow-soft);
+}
+
+.page-introduction-copy {
+  min-width: 0;
+}
+
+.page-introduction-copy h2 {
+  margin: 0;
+  font-size: 1.32rem;
+}
+
+.page-introduction-copy p {
+  max-width: 760px;
+  margin: 7px 0 0;
+  color: var(--muted);
+  font-size: 0.8rem;
+  line-height: 1.55;
+}
+
+.page-introduction-actions {
+  flex: 0 0 auto;
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  flex-wrap: wrap;
+}
+
+/* =========================================================
+   ESTADOS VAZIOS, CARREGAMENTO E ERRO
+   ========================================================= */
+
+.page-empty-state,
+.page-error-state,
+.page-loading-state {
+  min-height: 220px;
+  display: grid;
+  place-items: center;
+  padding: 32px;
+  text-align: center;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  box-shadow: var(--shadow-soft);
+}
+
+.page-state-content {
+  max-width: 520px;
+  display: grid;
+  justify-items: center;
+  gap: 10px;
+}
+
+.page-state-icon {
+  width: 48px;
+  height: 48px;
+  display: grid;
+  place-items: center;
+  color: var(--purple);
+  background: var(--purple-soft);
+  border-radius: 15px;
+  font-size: 1.25rem;
+  font-weight: 800;
+}
+
+.page-state-content h2,
+.page-state-content h3 {
+  margin: 0;
+}
+
+.page-state-content p {
+  margin: 0;
+  color: var(--muted);
+  font-size: 0.8rem;
+  line-height: 1.55;
+}
+
+.page-error-state .page-state-icon {
+  color: var(--red);
+  background: color-mix(in srgb, var(--red) 13%, transparent);
+}
+
+/* =========================================================
+   PÁGINA NÃO ENCONTRADA
+   ========================================================= */
+
+.not-found-page {
+  min-height: min(540px, calc(100vh - 250px));
+  display: grid;
+  place-items: center;
+}
+
+.not-found-card {
+  width: min(560px, 100%);
+  display: grid;
+  justify-items: center;
+  gap: 14px;
+  padding: 42px 30px;
+  text-align: center;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 24px;
+  box-shadow: var(--shadow-medium);
+}
+
+.not-found-code {
+  margin: 0;
+  color: var(--purple);
+  font-family: "Manrope", sans-serif;
+  font-size: clamp(3.2rem, 10vw, 5.4rem);
+  font-weight: 800;
+  line-height: 1;
+  letter-spacing: -0.08em;
+}
+
+.not-found-card h2 {
+  margin: 0;
+  font-size: 1.4rem;
+}
+
+.not-found-card p {
+  max-width: 430px;
+  margin: 0;
+  color: var(--muted);
+  font-size: 0.82rem;
+  line-height: 1.55;
+}
+
+.not-found-card a {
+  margin-top: 6px;
+  text-decoration: none;
+}
+
+/* =========================================================
+   PÁGINAS ESPECÍFICAS
+   ========================================================= */
+
+.dashboard-page,
+.transactions-page,
+.transfers-page,
+.recurrences-page,
+.invoices-page,
+.analytics-page,
+.settings-page {
+  width: 100%;
+  min-width: 0;
+}
+
+.dashboard-page {
+  gap: 34px;
+}
+
+.transactions-page,
+.transfers-page,
+.settings-page {
+  gap: 36px;
+}
+
+.recurrences-page,
+.invoices-page,
+.analytics-page {
+  gap: 32px;
+}
+
+/* =========================================================
+   AUXILIARES
+   ========================================================= */
+
+.full-width {
+  width: 100%;
+}
+
+.min-width-zero {
+  min-width: 0;
+}
+
+.page-divider {
+  width: 100%;
+  height: 1px;
+  margin: 2px 0;
+  background: var(--border);
+  border: 0;
+}
+
+.page-visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  overflow: hidden;
+  white-space: nowrap;
+  border: 0;
+  clip: rect(0, 0, 0, 0);
+  clip-path: inset(50%);
+}
+
+/* =========================================================
+   RESPONSIVIDADE
+   ========================================================= */
+
+@media (max-width: 1080px) {
+  .page-grid.three-columns {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .page-grid.main-sidebar,
+  .page-grid.sidebar-main {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 760px) {
+  .page {
+    gap: 28px;
+  }
+
+  .page-content {
+    gap: 24px;
+  }
+
+  .page-grid.two-columns,
+  .page-grid.three-columns {
+    grid-template-columns: 1fr;
+  }
+
+  .page-section-header,
+  .page-card-header,
+  .page-introduction {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .page-section-actions,
+  .page-introduction-actions {
+    width: 100%;
+    justify-content: flex-start;
+  }
+
+  .page-card {
+    padding: 20px;
+    border-radius: 17px;
+  }
+
+  .page-introduction {
+    padding: 20px;
+    border-radius: 17px;
+  }
+
+  .page-empty-state,
+  .page-error-state,
+  .page-loading-state {
+    min-height: 190px;
+    padding: 26px 20px;
+    border-radius: 17px;
+  }
+
+  .not-found-card {
+    padding: 34px 22px;
+    border-radius: 20px;
+  }
+}
+
+@media (max-width: 480px) {
+  .page {
+    gap: 24px;
+  }
+
+  .page-content {
+    gap: 20px;
+  }
+
+  .page-section-header {
+    margin-bottom: 14px;
+  }
+
+  .page-card,
+  .page-card.compact {
+    padding: 16px;
+  }
+
+  .page-introduction {
+    padding: 17px;
+  }
+
+  .page-section-description,
+  .page-card-header p,
+  .page-introduction-copy p {
+    font-size: 0.74rem;
+  }
+
+  .page-section-actions > button,
+  .page-section-actions > a,
+  .page-introduction-actions > button,
+  .page-introduction-actions > a {
+    flex: 1 1 auto;
+  }
+
+  .not-found-page {
+    min-height: 430px;
+  }
+
+  .not-found-card {
+    padding: 30px 18px;
+  }
+}
+
+/* =========================================================
+   ACESSIBILIDADE
+   ========================================================= */
+
+@media (prefers-reduced-motion: reduce) {
+  .page-card,
+  .page-introduction,
+  .page-empty-state,
+  .page-error-state,
+  .page-loading-state {
+    scroll-behavior: auto;
+  }
+}

@@ -1,0 +1,59 @@
+.account-overview { display: grid; gap: 14px; }
+.account-summary-grid, .account-overview-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 14px; }
+.account-summary-grid article, .account-overview-grid > article { background: white; border: 1px solid #e9e5ee; border-radius: 17px; padding: 17px; box-shadow: 0 7px 22px rgba(50, 35, 70, .045); }
+.account-summary-grid span, .account-overview-grid span, .account-summary-grid small, .account-overview-grid small { display: block; color: var(--muted); font-size: .72rem; }
+.account-summary-grid strong { display: block; margin: 7px 0 5px; font-size: 1.2rem; }
+.account-overview-grid { grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); }
+.account-overview-grid h3 { margin: 0; font-size: .9rem; }
+.account-overview-grid dl { display: grid; gap: 7px; margin: 15px 0 8px; }
+.account-overview-grid dl > div { display: flex; justify-content: space-between; gap: 10px; }
+.account-overview-grid dt { color: var(--muted); font-size: .72rem; }
+.account-overview-grid dd { margin: 0; font-size: .78rem; font-weight: 700; }
+.account-empty { padding: 26px; }
+
+.accounts-settings-grid > .accounts-manager { grid-column: 1 / -1; }
+.account-form { margin-top: 18px; padding: 15px; border: 1px solid #eee8f2; border-radius: 13px; background: #faf8fc; }
+.account-form .form-grid { margin-bottom: 14px; }
+.account-total-toggle { display: flex !important; align-items: center; gap: 8px; padding-top: 24px; color: #5f5865 !important; }
+.account-total-toggle input { width: auto !important; margin: 0 !important; accent-color: var(--purple); }
+.account-list { display: grid; gap: 10px; margin-top: 18px; }
+.account-row { padding: 14px; border: 1px solid #ece7f0; border-radius: 13px; background: #fff; }
+.account-row.archived { background: #faf8fb; opacity: .82; }
+.account-row-heading { display: flex; justify-content: space-between; gap: 14px; }
+.account-row-heading > div:first-child { min-width: 0; }
+.account-row-heading strong { display: block; font-size: .84rem; }
+.account-row-heading span, .account-meta, .account-notes { color: var(--muted); font-size: .7rem; }
+.account-meta, .account-notes { margin: 8px 0 0; line-height: 1.45; }
+.account-notes { font-style: italic; }
+.account-balance { display: flex; gap: 12px; text-align: right; }
+.account-balance span { color: var(--muted); font-size: .64rem; }
+.account-balance b { display: block; color: #403946; font-size: .74rem; }
+.account-row-actions { display: flex; justify-content: flex-end; gap: 8px; flex-wrap: wrap; margin-top: 12px; }
+.account-row-actions button:disabled { color: #aaa4ae; cursor: not-allowed; }
+.account-movements { margin-top: 10px; border-top: 1px dashed #e5dfea; padding-top: 9px; color: var(--purple); font-size: .7rem; }
+.account-movements summary { cursor: pointer; }
+.account-movements ul { display: grid; gap: 6px; margin: 9px 0 0; padding: 0; list-style: none; color: #5f5865; }
+.account-movements li { display: grid; grid-template-columns: minmax(0, 1fr) auto auto; align-items: center; gap: 8px; border-radius: 8px; background: #faf8fc; padding: 7px 8px; }
+.account-movements li span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.account-movements li b { font-size: .7rem; }
+.account-movements li b.income { color: var(--green); }
+.account-movements li b.expense { color: var(--red); }
+.account-movements li small { color: var(--muted); font-size: .61rem; }
+
+.pay-account-form { display: grid; gap: 10px; margin: 16px 0; text-align: left; }
+.pay-account-form label { display: grid; gap: 6px; color: #605a66; font-size: .75rem; font-weight: 600; }
+.pay-account-form select, .pay-account-form input, .pay-account-form textarea { width: 100%; padding: 10px 11px; color: #302b35; background: #fbfafc; border: 1px solid var(--border); border-radius: 9px; }
+.pay-account-form textarea { resize: vertical; }
+
+@media (max-width: 980px) {
+  .account-summary-grid { grid-template-columns: 1fr 1fr; }
+}
+@media (max-width: 680px) {
+  .account-summary-grid, .account-overview-grid { grid-template-columns: 1fr; }
+  .account-row-heading { align-items: flex-start; flex-direction: column; }
+  .account-balance { text-align: left; }
+  .account-row-actions { justify-content: flex-start; }
+  .account-movements li { grid-template-columns: minmax(0, 1fr) auto; }
+  .account-movements li small { grid-column: 1 / -1; }
+  .account-total-toggle { padding-top: 0; }
+}

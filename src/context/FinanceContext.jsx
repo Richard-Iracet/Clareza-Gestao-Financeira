@@ -802,7 +802,7 @@ export function FinanceProvider({ children, hasLocalState = true }) {
 
   const value = useMemo(() => ({
     transactions, filteredTransactions, transfers, filteredTransfers, recurrences, alertStates, alerts,
-    categories, cards, accounts, invoices, invoicePayments, indexes, recurrenceIndexes, costCenters: storedCostCenters, userSettings, filters, setFilters, defaultFilters,
+    categories, cards, accounts, invoices, invoicePayments, indexes, recurrenceIndexes, costCenters: storedCostCenters, userSettings, setUserSettings, filters, setFilters, defaultFilters,
     addTransaction, updateTransaction, deleteTransaction, bulkUpdateTransactions, bulkDeleteTransactions, togglePaid,
     addAccount, updateAccount, archiveAccount, restoreAccount, deleteAccount,
     addTransfer, updateScheduledTransfer, completeTransfer, cancelTransfer, reverseTransfer,

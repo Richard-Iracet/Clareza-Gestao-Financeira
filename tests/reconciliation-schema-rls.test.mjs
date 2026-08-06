@@ -1,0 +1,7 @@
+import test from 'node:test'
+import assert from 'node:assert/strict'
+import { readFile } from 'node:fs/promises'
+const read = (name) => readFile(new URL(`../supabase/migrations/${name}`, import.meta.url), 'utf8')
+test('schema é incremental, paralelo e não escreve finance_states', async () => { const sql = await read('008_create_reconciliation_engine_schema.sql'); for (const table of ['reconciliation_runs','reconciliation_candidates','reconciliation_rules']) assert.match(sql, new RegExp(`create table if not exists public.${table}`)); assert.doesNotMatch(sql, /update\s+public\.finance_states|delete\s+from\s+public\.finance_states/i); assert.match(sql, /defaultMode.*disabled/); assert.match(sql, /heuristicAutoMatch.*false/) })
+test('RLS força isolamento por usuário e não concede delete', async () => { const sql = await read('009_reconciliation_engine_rls.sql'); for (const table of ['reconciliation_runs','reconciliation_candidates','reconciliation_rules']) assert.match(sql, new RegExp(`['\"]${table}['\"]`)); assert.match(sql, /force row level security/); assert.match(sql, /auth\.uid\(\).*user_id/); assert.doesNotMatch(sql, /grant delete/i) })
+test('flags da fase são opt-in', async () => { const source = await readFile(new URL('../src/config/featureFlags.js', import.meta.url), 'utf8'); for (const flag of ['reconciliationObservationMode','reconciliationReview','reconciliationExactAutoMatch','reconciliationRules']) assert.match(source, new RegExp(flag)); assert.match(source, /DEFAULT_FEATURE_FLAGS.*false/s) })

@@ -1,0 +1,17 @@
+import { useEffect, useState } from 'react'
+import { useAuth } from '../context/AuthContext.jsx'
+import { getSupabaseClient } from '../infrastructure/supabase/supabaseClient.js'
+import { createReconciliationEngineRepository } from '../infrastructure/storage/reconciliationEngineRepository.js'
+import { createReconciliationRepository } from '../infrastructure/storage/reconciliationRepository.js'
+import { explainCandidate } from '../domain/reconciliation/explanationService.js'
+import '../styles/reconciliation.css'
+
+export default function ReconciliationPage() {
+  const { user } = useAuth(); const [items, setItems] = useState([]); const [error, setError] = useState('')
+  useEffect(() => { createReconciliationEngineRepository(getSupabaseClient()).listReviewQueue({ userId: user.id }).then(setItems).catch((reason) => setError(reason.message)) }, [user.id])
+  const decide = async (candidate, decision) => {
+    if (!window.confirm(`Confirmar decisão: ${decision}? Esta ação poderá ser desfeita.`)) return
+    try { const repository = createReconciliationRepository(getSupabaseClient()); const now = new Date().toISOString(); let link = null; if (decision === 'match') link = await repository.createLink({ id: crypto.randomUUID(), user_id: user.id, raw_transaction_id: candidate.raw_transaction_id, financial_transaction_id: candidate.financial_transaction_id, link_type: 'manual_match', status: 'matched', confidence: candidate.score / 100, match_method: 'phase4_review', match_reasons: candidate.positive_reasons, algorithm_version: candidate.algorithm_version, is_primary: true, created_by: user.id, created_at: now, updated_at: now }); await repository.createDecision({ id: crypto.randomUUID(), user_id: user.id, candidate_id: candidate.id, raw_transaction_id: candidate.raw_transaction_id, financial_transaction_id: candidate.financial_transaction_id, decision, status: decision === 'ignore' ? 'ignored' : decision === 'mark_conflict' ? 'conflict' : 'matched', confidence: candidate.score / 100, reasons: candidate.positive_reasons, features: candidate.features, algorithm_version: candidate.algorithm_version, decided_by: user.id, decided_at: now, metadata: link ? { linkId: link.id } : {} }); setItems((current) => current.filter((item) => item.id !== candidate.id)) } catch (reason) { setError(reason.message) }
+  }
+  return <main className="reconciliation-page"><header><p className="eyebrow">Modelo paralelo</p><h1>Revisão de reconciliação</h1><p>As sugestões abaixo não alteram o JSONB oficial nem os totais financeiros.</p></header>{error && <p role="alert">{error}</p>}<section aria-label="Fila de revisão">{items.length === 0 ? <p>Nenhuma sugestão pendente.</p> : items.map((item) => <article className="reconciliation-card" key={item.id}><div><h2>Origem externa</h2><code>{item.raw_transaction_id}</code></div><div><h2>Lançamento atual</h2><code>{item.financial_transaction_id}</code></div><aside><strong>{item.score}/100 · {item.classification}</strong><ul>{explainCandidate({ positiveReasons: item.positive_reasons || [], negativeReasons: item.negative_reasons || [], blockingReasons: item.blocking_reasons || [] }).map((reason) => <li key={reason.code}>{reason.label}</li>)}</ul></aside><footer><button onClick={() => decide(item, 'match')}>Vincular</button><button onClick={() => decide(item, 'keep_separate')}>Manter separados</button><button onClick={() => decide(item, 'ignore')}>Ignorar</button><button onClick={() => decide(item, 'mark_conflict')}>Marcar conflito</button></footer></article>)}</section></main>
+}

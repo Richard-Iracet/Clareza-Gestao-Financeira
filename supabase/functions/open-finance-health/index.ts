@@ -1,0 +1,1 @@
+import{secureHandler,json}from'../_shared/open-finance/security.ts';import{getProvider}from'../_shared/open-finance/provider.ts';secureHandler(['GET'],async({request,id})=>json(request,200,{gateway:'healthy',provider:await getProvider().healthCheck(),officialSync:false},id))

@@ -16,6 +16,7 @@
     "test:import": "node --test tests/import-money-date.test.mjs tests/import-csv.test.mjs tests/import-ofx.test.mjs tests/import-batch-idempotency.test.mjs tests/import-security.test.mjs tests/import-schema-ui.test.mjs",
     "test:reconciliation": "node --test tests/reconciliation-engine.test.mjs tests/reconciliation-decisions.test.mjs tests/reconciliation-schema-rls.test.mjs",
     "test:financial-rules": "node --test tests/financial-event-classifier.test.mjs tests/financial-event-special-rules.test.mjs tests/financial-event-schema-rls.test.mjs",
+    "test:open-finance": "node --test tests/open-finance-contract-mock.test.mjs tests/open-finance-lifecycle-security.test.mjs tests/open-finance-schema-edge.test.mjs",
     "relational:backfill": "node scripts/backfill-relational-shadow.mjs",
     "relational:compare": "node scripts/compare-relational-shadow.mjs",
     "origin:backfill": "node scripts/backfill-origin-metadata.mjs",
@@ -27,6 +28,10 @@
     "financial-rules:compare": "node scripts/compare-financial-classification.mjs",
     "financial-rules:reprocess": "node scripts/reprocess-financial-events.mjs",
     "financial-rules:validate-links": "node scripts/validate-financial-event-links.mjs",
+    "open-finance:test-mock": "node scripts/test-open-finance-mock.mjs",
+    "open-finance:validate-config": "node scripts/validate-open-finance-config.mjs",
+    "open-finance:check-secrets": "node scripts/check-client-secrets.mjs",
+    "open-finance:check-migrations": "node scripts/check-open-finance-migrations.mjs",
     "preview": "vite preview"
   },
   "engines": {

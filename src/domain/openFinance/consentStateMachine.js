@@ -1,0 +1,3 @@
+const transitions=Object.freeze({pending:['awaiting_user'],awaiting_user:['authorized','rejected','failed'],authorized:['active','failed'],active:['requires_action','expired','revoked'],requires_action:['active','expired','revoked'],expired:['pending'],revoked:[],rejected:['pending'],failed:['pending'],unknown:['pending']})
+export const transitionConsent=(current,next)=>{if(!transitions[current]?.includes(next)){const error=new Error(`Transição de consentimento inválida: ${current} → ${next}.`);error.code='INVALID_CONSENT_TRANSITION';throw error}return next}
+export const canSynchronizeConsent=(status)=>status==='active'

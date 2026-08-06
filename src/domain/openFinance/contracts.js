@@ -1,0 +1,6 @@
+export const OPEN_FINANCE_CONTRACT_VERSION='open-finance-canonical-v1'
+export const CONSENT_STATUSES=Object.freeze(['pending','awaiting_user','authorized','active','expired','revoked','rejected','failed','requires_action','unknown'])
+export const CONNECTION_STATUSES=Object.freeze(['created','connecting','awaiting_consent','active','requires_reauthentication','expired','revoked','failed','disconnected'])
+export const CONNECTION_EVENTS=Object.freeze(['connection_created','consent_started','consent_authorized','consent_rejected','consent_expired','consent_revoked','renewal_required','connection_active','connection_failed','account_discovered','account_removed','callback_received','webhook_received','rate_limited','provider_timeout','schema_warning'])
+export const PROVIDER_METHODS=Object.freeze(['getProviderInfo','createConnectionSession','exchangeCallback','listInstitutions','getConsent','renewConsent','revokeConsent','listAccounts','getConnectionStatus','validateWebhook','healthCheck'])
+export const assertOpenFinanceProvider=(provider)=>{for(const method of PROVIDER_METHODS)if(typeof provider?.[method]!=='function')throw new TypeError(`Provider Open Finance sem método obrigatório: ${method}.`);return provider}

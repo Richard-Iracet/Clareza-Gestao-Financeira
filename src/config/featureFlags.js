@@ -1,7 +1,7 @@
 import { readAppEnvironment } from './appEnvironment.js'
 
 export const FEATURE_FLAGS = Object.freeze({
-  phase0BaselineTools: 'phase0BaselineTools', relationalShadowModel: 'relationalShadowModel', relationalBackfillTools: 'relationalBackfillTools', relationalShadowWrite: 'relationalShadowWrite', relationalShadowRead: 'relationalShadowRead', relationalEquivalenceReports: 'relationalEquivalenceReports', originIdentityLayer: 'originIdentityLayer', externalRawDataLayer: 'externalRawDataLayer', auditEvents: 'auditEvents', reversibleReconciliation: 'reversibleReconciliation', externalDataIngestion: 'externalDataIngestion', ofxCsvImport: 'ofxCsvImport', reconciliationEngine: 'reconciliationEngine', reconciliationObservationMode: 'reconciliationObservationMode', reconciliationReview: 'reconciliationReview', reconciliationExactAutoMatch: 'reconciliationExactAutoMatch', reconciliationRules: 'reconciliationRules', financialEventClassifier: 'financialEventClassifier', financialRulesShadowMode: 'financialRulesShadowMode', invoiceSettlementRules: 'invoiceSettlementRules', internalTransferRules: 'internalTransferRules', reversalRules: 'reversalRules', financialRulesComparison: 'financialRulesComparison', financialRulesOfficialRead: 'financialRulesOfficialRead', openFinanceGateway: 'openFinanceGateway', assistedOpenFinanceSync: 'assistedOpenFinanceSync', automaticOpenFinanceSync: 'automaticOpenFinanceSync', unifiedFinancialHub: 'unifiedFinancialHub', deterministicSpendingInsights: 'deterministicSpendingInsights', investmentsModule: 'investmentsModule', marketData: 'marketData', taxAssistant: 'taxAssistant', financialAI: 'financialAI', investmentAI: 'investmentAI',
+  phase0BaselineTools: 'phase0BaselineTools', relationalShadowModel: 'relationalShadowModel', relationalBackfillTools: 'relationalBackfillTools', relationalShadowWrite: 'relationalShadowWrite', relationalShadowRead: 'relationalShadowRead', relationalEquivalenceReports: 'relationalEquivalenceReports', originIdentityLayer: 'originIdentityLayer', externalRawDataLayer: 'externalRawDataLayer', auditEvents: 'auditEvents', reversibleReconciliation: 'reversibleReconciliation', externalDataIngestion: 'externalDataIngestion', ofxCsvImport: 'ofxCsvImport', reconciliationEngine: 'reconciliationEngine', reconciliationObservationMode: 'reconciliationObservationMode', reconciliationReview: 'reconciliationReview', reconciliationExactAutoMatch: 'reconciliationExactAutoMatch', reconciliationRules: 'reconciliationRules', financialEventClassifier: 'financialEventClassifier', financialRulesShadowMode: 'financialRulesShadowMode', invoiceSettlementRules: 'invoiceSettlementRules', internalTransferRules: 'internalTransferRules', reversalRules: 'reversalRules', financialRulesComparison: 'financialRulesComparison', financialRulesOfficialRead: 'financialRulesOfficialRead', openFinanceGateway: 'openFinanceGateway', openFinanceConnections: 'openFinanceConnections', openFinanceMockProvider: 'openFinanceMockProvider', openFinanceSandbox: 'openFinanceSandbox', openFinanceWebhooks: 'openFinanceWebhooks', openFinanceOfficialSync: 'openFinanceOfficialSync', assistedOpenFinanceSync: 'assistedOpenFinanceSync', automaticOpenFinanceSync: 'automaticOpenFinanceSync', unifiedFinancialHub: 'unifiedFinancialHub', deterministicSpendingInsights: 'deterministicSpendingInsights', investmentsModule: 'investmentsModule', marketData: 'marketData', taxAssistant: 'taxAssistant', financialAI: 'financialAI', investmentAI: 'investmentAI',
 })
 export const DEFAULT_FEATURE_FLAGS = Object.freeze(Object.fromEntries(Object.values(FEATURE_FLAGS).map((flag) => [flag, false])))
 const truthy = (value) => String(value || '').toLowerCase() === 'true'
@@ -27,6 +27,14 @@ export const resolveFeatureFlags = ({ env = import.meta.env || {}, overrides = {
     flags.financialRulesComparison = flags.financialEventClassifier && truthy(env.VITE_FINANCIAL_RULES_COMPARISON)
     flags.financialRulesOfficialRead = false
   }
+  if (appEnvironment.valid) {
+    flags.openFinanceGateway = truthy(env.VITE_OPEN_FINANCE_GATEWAY)
+    flags.openFinanceConnections = flags.openFinanceGateway && truthy(env.VITE_OPEN_FINANCE_CONNECTIONS)
+    flags.openFinanceMockProvider = flags.openFinanceGateway && !appEnvironment.isProduction && truthy(env.VITE_OPEN_FINANCE_MOCK_PROVIDER)
+    flags.openFinanceSandbox = flags.openFinanceGateway && truthy(env.VITE_OPEN_FINANCE_SANDBOX)
+    flags.openFinanceWebhooks = flags.openFinanceGateway && truthy(env.VITE_OPEN_FINANCE_WEBHOOKS)
+    flags.openFinanceOfficialSync = false
+  }
   Object.keys(flags).forEach((flag) => { if (typeof overrides?.[flag] === 'boolean') flags[flag] = overrides[flag] })
   if (!flags.reconciliationEngine) {
     flags.reconciliationObservationMode = false
@@ -36,6 +44,8 @@ export const resolveFeatureFlags = ({ env = import.meta.env || {}, overrides = {
   }
   if (!flags.financialEventClassifier) for (const flag of ['financialRulesShadowMode','invoiceSettlementRules','internalTransferRules','reversalRules','financialRulesComparison','financialRulesOfficialRead']) flags[flag] = false
   flags.financialRulesOfficialRead = false
+  if (!flags.openFinanceGateway) for (const flag of ['openFinanceConnections','openFinanceMockProvider','openFinanceSandbox','openFinanceWebhooks','openFinanceOfficialSync']) flags[flag] = false
+  flags.openFinanceOfficialSync = false
   if (!appEnvironment.valid || appEnvironment.isProduction) flags.phase0BaselineTools = false
   return Object.freeze(flags)
 }

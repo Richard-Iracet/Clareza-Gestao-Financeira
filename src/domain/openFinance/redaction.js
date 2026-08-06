@@ -1,0 +1,3 @@
+const sensitive=/(token|secret|password|authorization|code|document|cpf|cnpj|account(number)?|refresh)/i
+export const redactOpenFinance=(value,depth=0)=>{if(depth>4)return'[TRUNCATED]';if(Array.isArray(value))return value.slice(0,20).map((item)=>redactOpenFinance(item,depth+1));if(value&&typeof value==='object')return Object.fromEntries(Object.entries(value).slice(0,50).map(([key,item])=>[key,sensitive.test(key)?'[REDACTED]':redactOpenFinance(item,depth+1)]));if(typeof value==='string')return value.length>200?`${value.slice(0,200)}…`:value;return value}
+export const safeOpenFinanceLog=(logger,event,details={})=>logger(event,redactOpenFinance(details))

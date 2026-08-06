@@ -37,6 +37,17 @@ npm run cap:sync
 npm run cap:android
 ```
 
+## Governança e linha de base (Fase 0)
+
+Metadados públicos de build, contratos persistidos, invariantes financeiros e runbooks ficam em [`docs/`](./docs/). A ferramenta de exportação de linha de base/evidências é somente leitura e exige `VITE_PHASE0_BASELINE_TOOLS=true` fora de produção; em produção permanece desativada mesmo com override. Configure `VITE_APP_ENV` como `development`, `staging` ou `production`.
+
+Testes específicos:
+
+```bash
+npm run test:baseline
+npm run test:regression
+```
+
 ## Configuração do Supabase
 
 1. Crie um projeto em <https://supabase.com>.

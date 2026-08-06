@@ -2,7 +2,7 @@ import { CURRENT_FINANCE_DATA_VERSION } from './dataValidation.js'
 import { readStorage, removeStorage, STORAGE_KEYS, writeStorage } from './storage.js'
 
 export const SNAPSHOT_SCHEMA_VERSION = 1
-export const APP_VERSION = '1.0.0'
+export const APP_VERSION = typeof __APP_VERSION__ === 'undefined' ? '1.0.0' : __APP_VERSION__
 
 const stable = (value) => {
   if (Array.isArray(value)) return value.map(stable)

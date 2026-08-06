@@ -1,0 +1,8 @@
+{
+  "format": "clareza-finance-backup",
+  "version": 1,
+  "exportedAt": "2025-01-01T12:00:00.000Z",
+  "metadata": { "application": "Clareza Financeira", "financeDataVersion": 4, "counts": { "transactions": 0, "invoices": 0, "cards": 0, "categories": 0, "installments": 0 } },
+  "data": { "transactions": [], "cards": [], "categories": [], "costCenters": [], "invoiceRecords": [], "savedFilters": {}, "userSettings": {}, "migrations": { "financeDataVersion": 4 } },
+  "storage": { "clareza:transactions": [], "clareza:cards": [], "clareza:categories": [], "clareza:invoices": [], "clareza:filters": {}, "clareza:userSettings": {}, "clareza:costCenters": [], "financeDataVersion": 4 }
+}

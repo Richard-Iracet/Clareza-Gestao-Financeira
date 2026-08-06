@@ -1,7 +1,8 @@
-import { costCenters } from '../data/settings.js'
+import { costCenters as defaultCostCenters } from '../data/settings.js'
 import { BACKUP_FORMAT_VERSION, validateBackup } from './dataValidation.js'
 import { createSnapshot, persistSnapshot, readSnapshotCandidate } from './snapshot.js'
 import { STORAGE_KEYS, writeStorage } from './storage.js'
+import { getAppMetadata } from '../config/appMetadata.js'
 
 export const FINANCE_STORAGE_KEYS = [STORAGE_KEYS.transactions, STORAGE_KEYS.categories, STORAGE_KEYS.cards, STORAGE_KEYS.accounts, STORAGE_KEYS.transfers, STORAGE_KEYS.recurrences, STORAGE_KEYS.alertStates, STORAGE_KEYS.invoices, STORAGE_KEYS.filters, STORAGE_KEYS.userSettings, STORAGE_KEYS.costCenters, STORAGE_KEYS.dataVersion, 'financeDataBackupBeforeInvoiceMigration', 'financeDataBackupBeforeInstallmentProjectionV4']
 export const SNAPSHOT_STORAGE_KEYS = [STORAGE_KEYS.current, STORAGE_KEYS.temp, STORAGE_KEYS.lastValid, STORAGE_KEYS.recovery, STORAGE_KEYS.metadata]
@@ -49,6 +50,7 @@ export const createBackup = (backend, runtime = {}) => {
   const invoiceRecords = runtime.invoicePayments ?? stored.values[STORAGE_KEYS.invoices] ?? []
   const savedFilters = runtime.filters ?? stored.values[STORAGE_KEYS.filters] ?? {}
   const userSettings = runtime.userSettings ?? stored.values[STORAGE_KEYS.userSettings] ?? {}
+  const costCenters = runtime.costCenters ?? stored.values[STORAGE_KEYS.costCenters] ?? defaultCostCenters
   const financeDataVersion = validVersion(stored.values[STORAGE_KEYS.dataVersion], validVersion(current.data?.financeDataVersion, 4))
   const migrations = runtime.migrations ?? current.data?.data?.migrations ?? { financeDataVersion }
   const snapshotData = {
@@ -95,11 +97,12 @@ export const createBackup = (backend, runtime = {}) => {
     financeDataVersion,
     revision: Math.max(1, Number(current.data?.revision || 0) + 1),
   })
+  const appMetadata = getAppMetadata(runtime.environment)
   return {
     format: 'clareza-finance-backup',
     version: BACKUP_FORMAT_VERSION,
     exportedAt: new Date().toISOString(),
-    metadata: { application: 'Clareza Financeira', financeDataVersion, locale: 'pt-BR', counts },
+    metadata: { application: 'Clareza Financeira', financeDataVersion, locale: 'pt-BR', counts, appMetadata },
     data: { transactions, cards, accounts: snapshotData.accounts, transfers: snapshotData.transfers, recurrences: snapshotData.recurrences, alertStates: snapshotData.alertStates, categories, costCenters, invoiceRecords, savedFilters, userSettings, migrations },
     storage: storageValues,
     snapshot,

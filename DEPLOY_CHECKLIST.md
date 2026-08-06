@@ -7,6 +7,11 @@
 - [ ] `VITE_SUPABASE_URL` e `VITE_SUPABASE_ANON_KEY` configuradas na Vercel.
 - [ ] Nenhuma chave `service_role` presente no código ou ambiente frontend.
 - [ ] `npm install`, `npm test` e `npm run build` concluídos.
+- [ ] `VITE_APP_ENV` corresponde ao ambiente e homologação usa Supabase/Vercel/usuários separados.
+- [ ] Metadados de build públicos conferidos; nenhum segredo usa prefixo `VITE_`.
+- [ ] Linha de base e pacote de evidências exportados antes do rollout quando a flag estiver habilitada.
+- [ ] Checksums anterior e posterior comparados; divergências financeiras explicadas antes de prosseguir.
+- [ ] Procedimento de rollback de `docs/runbooks/rollback.md` revisado.
 - [ ] Login, logout e restauração da sessão testados.
 - [ ] Primeiro envio de dados locais confirmado.
 - [ ] Conflito entre dois navegadores testado sem overwrite silencioso.

@@ -12,8 +12,11 @@
     "test:baseline": "node --test tests/baseline.test.mjs tests/backup-restoration-baseline.test.mjs tests/feature-flags.test.mjs",
     "test:regression": "node --test tests/baseline-financial-regression.test.mjs",
     "test:relational": "node --test tests/relational-mapper.test.mjs tests/relational-backfill.test.mjs tests/relational-equivalence.test.mjs tests/relational-performance.test.mjs tests/relational-rls.test.mjs",
+    "test:origin": "node --test tests/origin-fingerprint-versions.test.mjs tests/origin-field-ownership.test.mjs tests/origin-lifecycle-reconciliation.test.mjs tests/origin-backfill.test.mjs tests/origin-schema-rls.test.mjs",
     "relational:backfill": "node scripts/backfill-relational-shadow.mjs",
     "relational:compare": "node scripts/compare-relational-shadow.mjs",
+    "origin:backfill": "node scripts/backfill-origin-metadata.mjs",
+    "origin:validate": "node scripts/validate-origin-metadata.mjs",
     "preview": "vite preview"
   },
   "engines": {

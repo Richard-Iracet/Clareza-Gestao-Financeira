@@ -1,0 +1,1 @@
+import{Navigate}from'react-router-dom';import{FEATURE_FLAGS,isFeatureEnabled}from'../../config/featureFlags.js';export default function AssistedSyncGuard({children}){return isFeatureEnabled(FEATURE_FLAGS.openFinanceAssistedSync)?children:<Navigate to="/" replace/>}

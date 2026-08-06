@@ -18,9 +18,11 @@ import TransfersPage from "./pages/TransfersPage";
 import LoginPage from "./pages/LoginPage";
 import FeatureFlagGuard from "./components/Imports/FeatureFlagGuard";
 import ReconciliationFeatureGuard from "./components/Reconciliation/ReconciliationFeatureGuard";
+import AssistedSyncGuard from "./components/OpenFinance/AssistedSyncGuard.jsx";
 
 const ImportsPage = lazy(() => import("./pages/ImportsPage"));
 const ReconciliationPage = lazy(() => import("./pages/ReconciliationPage"));
+const AssistedSyncPage = lazy(() => import("./pages/AssistedSyncPage.jsx"));
 
 function AuthenticatedApplication() {
   const auth = useAuth();
@@ -54,6 +56,7 @@ export default function App() {
         <Route path="importacoes" element={<FeatureFlagGuard><Suspense fallback={<main className="page-loading-state">Carregando importação…</main>}><ImportsPage /></Suspense></FeatureFlagGuard>} />
 
         <Route path="reconciliacao" element={<ReconciliationFeatureGuard><Suspense fallback={<main className="page-loading-state">Carregando reconciliação…</main>}><ReconciliationPage /></Suspense></ReconciliationFeatureGuard>} />
+        <Route path="open-finance" element={<AssistedSyncGuard><Suspense fallback={<main className="page-loading-state">Carregando Open Finance…</main>}><AssistedSyncPage /></Suspense></AssistedSyncGuard>} />
 
         <Route path="*" element={<Navigate to="/" replace />} />
        </Route>

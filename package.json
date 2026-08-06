@@ -32,6 +32,11 @@
     "open-finance:validate-config": "node scripts/validate-open-finance-config.mjs",
     "open-finance:check-secrets": "node scripts/check-client-secrets.mjs",
     "open-finance:check-migrations": "node scripts/check-open-finance-migrations.mjs",
+    "assisted-sync:test-mock": "node scripts/test-assisted-sync-mock.mjs",
+    "assisted-sync:pilot": "node scripts/run-assisted-sync-pilot.mjs",
+    "assisted-sync:resume": "node scripts/resume-assisted-sync.mjs",
+    "assisted-sync:report": "node scripts/generate-sync-difference-report.mjs",
+    "assisted-sync:validate": "node scripts/validate-assisted-sync.mjs",
     "preview": "vite preview"
   },
   "engines": {

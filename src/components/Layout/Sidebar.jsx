@@ -2,6 +2,7 @@ import { NavLink } from "react-router-dom";
 import { FEATURE_FLAGS, isFeatureEnabled } from "../../config/featureFlags.js";
 
 const navigationItems = [
+  { to: "/open-finance", label: "Open Finance", description: "Sincronização assistida", featureFlag: FEATURE_FLAGS.openFinanceAssistedSync, icon: <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 10h16v10H4V10Zm2 2v6h12v-6H6Zm6-10 9 5v1H3V7l9-5Z" /></svg> },
   { to: "/reconciliacao", label: "Reconciliação", description: "Revisar correspondências", featureFlag: FEATURE_FLAGS.reconciliationReview, icon: <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 7h11l-3-3 1.4-1.4L21.8 8l-5.4 5.4L15 12l3-3H7V7Zm10 10H6l3 3-1.4 1.4L2.2 16l5.4-5.4L9 12l-3 3h11v2Z" /></svg> },
   {
     to: "/importacoes",

@@ -1,0 +1,4 @@
+﻿Data;Descrição;Débito;Crédito;Moeda;ID
+05/08/2026;"Mercado; bairro";1.234,56;;BRL;csv-001
+06/08/2026;Salário;;2.500,00;BRL;csv-002
+31/02/2026;Data inválida;25,90;;BRL;csv-003

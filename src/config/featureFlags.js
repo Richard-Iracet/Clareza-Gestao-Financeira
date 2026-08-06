@@ -10,6 +10,7 @@ export const resolveFeatureFlags = ({ env = import.meta.env || {}, overrides = {
   const appEnvironment = readAppEnvironment(env)
   const flags = { ...DEFAULT_FEATURE_FLAGS }
   if (appEnvironment.valid && !appEnvironment.isProduction) flags.phase0BaselineTools = truthy(env.VITE_PHASE0_BASELINE_TOOLS)
+  if (appEnvironment.valid) flags.ofxCsvImport = truthy(env.VITE_OFX_CSV_IMPORT)
   Object.keys(flags).forEach((flag) => { if (typeof overrides?.[flag] === 'boolean') flags[flag] = overrides[flag] })
   if (!appEnvironment.valid || appEnvironment.isProduction) flags.phase0BaselineTools = false
   return Object.freeze(flags)

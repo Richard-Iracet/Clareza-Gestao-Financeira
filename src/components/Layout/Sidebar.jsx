@@ -1,6 +1,14 @@
 import { NavLink } from "react-router-dom";
+import { FEATURE_FLAGS, isFeatureEnabled } from "../../config/featureFlags.js";
 
 const navigationItems = [
+  {
+    to: "/importacoes",
+    label: "Importações",
+    description: "Revisar OFX e CSV",
+    featureFlag: FEATURE_FLAGS.ofxCsvImport,
+    icon: <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 20h14v-2H5v2Zm7-18-5 5h3v6h4V7h3l-5-5Z" /></svg>,
+  },
   {
     to: "/dashboard",
     label: "Dashboard",
@@ -122,7 +130,7 @@ export default function Sidebar({ isOpen = false, onClose }) {
         <p className="sidebar-section-label">Menu principal</p>
 
         <ul className="sidebar-navigation-list">
-          {navigationItems.map((item) => (
+          {navigationItems.filter((item) => !item.featureFlag || isFeatureEnabled(item.featureFlag)).map((item) => (
             <li key={item.to}>
               <NavLink
                 to={item.to}

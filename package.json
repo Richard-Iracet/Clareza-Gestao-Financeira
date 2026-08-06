@@ -13,6 +13,7 @@
     "test:regression": "node --test tests/baseline-financial-regression.test.mjs",
     "test:relational": "node --test tests/relational-mapper.test.mjs tests/relational-backfill.test.mjs tests/relational-equivalence.test.mjs tests/relational-performance.test.mjs tests/relational-rls.test.mjs",
     "test:origin": "node --test tests/origin-fingerprint-versions.test.mjs tests/origin-field-ownership.test.mjs tests/origin-lifecycle-reconciliation.test.mjs tests/origin-backfill.test.mjs tests/origin-schema-rls.test.mjs",
+    "test:import": "node --test tests/import-money-date.test.mjs tests/import-csv.test.mjs tests/import-ofx.test.mjs tests/import-batch-idempotency.test.mjs tests/import-security.test.mjs tests/import-schema-ui.test.mjs",
     "relational:backfill": "node scripts/backfill-relational-shadow.mjs",
     "relational:compare": "node scripts/compare-relational-shadow.mjs",
     "origin:backfill": "node scripts/backfill-origin-metadata.mjs",

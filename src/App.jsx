@@ -1,4 +1,4 @@
-import { useMemo } from "react";
+import { lazy, Suspense, useMemo } from "react";
 import { Navigate, Route, Routes } from "react-router-dom";
 
 import AppLayout from "./components/Layout/AppLayout";
@@ -16,6 +16,9 @@ import SettingsPage from "./pages/SettingsPage";
 import TransactionsPage from "./pages/TransactionsPage";
 import TransfersPage from "./pages/TransfersPage";
 import LoginPage from "./pages/LoginPage";
+import FeatureFlagGuard from "./components/Imports/FeatureFlagGuard";
+
+const ImportsPage = lazy(() => import("./pages/ImportsPage"));
 
 function AuthenticatedApplication() {
   const auth = useAuth();
@@ -45,6 +48,8 @@ export default function App() {
         <Route path="analises" element={<AnalyticsPage />} />
 
         <Route path="configuracoes" element={<SettingsPage />} />
+
+        <Route path="importacoes" element={<FeatureFlagGuard><Suspense fallback={<main className="page-loading-state">Carregando importação…</main>}><ImportsPage /></Suspense></FeatureFlagGuard>} />
 
         <Route path="*" element={<Navigate to="/" replace />} />
        </Route>

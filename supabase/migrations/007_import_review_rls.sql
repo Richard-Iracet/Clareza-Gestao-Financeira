@@ -1,0 +1,24 @@
+begin;
+alter table public.import_batches enable row level security;
+alter table public.import_batches force row level security;
+revoke all on table public.import_batches from anon, authenticated;
+grant select, insert, update on table public.import_batches to authenticated;
+drop policy if exists import_batches_select_own on public.import_batches;
+create policy import_batches_select_own on public.import_batches for select to authenticated using ((select auth.uid()) = user_id);
+drop policy if exists import_batches_insert_own on public.import_batches;
+create policy import_batches_insert_own on public.import_batches for insert to authenticated with check ((select auth.uid()) = user_id);
+drop policy if exists import_batches_update_own on public.import_batches;
+create policy import_batches_update_own on public.import_batches for update to authenticated using ((select auth.uid()) = user_id) with check ((select auth.uid()) = user_id);
+
+alter table public.import_batch_records enable row level security;
+alter table public.import_batch_records force row level security;
+revoke all on table public.import_batch_records from anon, authenticated;
+grant select, insert on table public.import_batch_records to authenticated;
+grant update (normalized_payload, normalized_description, normalized_amount, amount_minor_units, currency, original_instant, accounting_date, fingerprint, normalization_version, inferred_type, external_status, review_status, errors, warnings, suspicion_reasons, possible_duplicate, user_decision, raw_transaction_id, raw_transaction_version_id, updated_at) on public.import_batch_records to authenticated;
+drop policy if exists import_batch_records_select_own on public.import_batch_records;
+create policy import_batch_records_select_own on public.import_batch_records for select to authenticated using ((select auth.uid()) = user_id);
+drop policy if exists import_batch_records_insert_own on public.import_batch_records;
+create policy import_batch_records_insert_own on public.import_batch_records for insert to authenticated with check ((select auth.uid()) = user_id);
+drop policy if exists import_batch_records_update_own on public.import_batch_records;
+create policy import_batch_records_update_own on public.import_batch_records for update to authenticated using ((select auth.uid()) = user_id) with check ((select auth.uid()) = user_id);
+commit;

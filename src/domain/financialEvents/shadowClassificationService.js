@@ -1,0 +1,6 @@
+import { classifyFinancialEvent } from './classifier.js'
+export const runFinancialClassificationShadow = ({ userId, inputs = [], previousEvents = [], cursor = 0, limit = 100, dryRun = false }) => {
+  const selected = inputs.filter((item) => (item.userId || item.user_id) === userId).slice(cursor, cursor + limit), prior = new Map(previousEvents.map((item) => [item.idempotencyKey, item]))
+  const events = selected.map((input) => { const key = `${userId}:${input.rawTransactionId || input.raw_transaction_id || input.id}:${input.version || input.version_number || 1}`; if (prior.has(key) && prior.get(key).confirmedAt) return prior.get(key); return { id: prior.get(key)?.id || crypto.randomUUID(), userId, rawTransactionId: input.rawTransactionId || input.raw_transaction_id || input.id, financialTransactionId: input.financialTransactionId || input.financial_transaction_id || null, idempotencyKey: key, ...classifyFinancialEvent({ input }) } })
+  return { events, dryRun, cursor: cursor + selected.length, hasMore: cursor + selected.length < inputs.length, statistics: { analyzed: selected.length, classified: events.filter((item) => item.classificationStatus === 'classified').length, underReview: events.filter((item) => item.requiresReview).length, preservedConfirmed: events.filter((item) => item.confirmedAt).length } }
+}

@@ -1,0 +1,2 @@
+export const selectInstallmentsForCompetence = (events = [], competence) => events.filter((item) => item.competenceDate?.slice(0,7) === competence || item.dates?.competenceDate?.slice(0,7) === competence)
+export const validateInstallment = (item) => ({ valid: Boolean(item.installmentGroupId && Number.isInteger(item.installmentNumber) && item.installmentNumber > 0 && item.competenceDate), warnings: item.installmentGroupId ? [] : ['INSTALLMENT_GROUP_REQUIRED'] })

@@ -1,0 +1,2 @@
+import { minorUnits } from './moneyEffects.js'
+export const calculateInternalTransferEffects = ({ amount, fee = '0.00' }) => { const principal = minorUnits(amount) < 0n ? -minorUnits(amount) : minorUnits(amount), charge = minorUnits(fee); return { sourceCashMinor: (-principal - charge).toString(), destinationCashMinor: principal.toString(), resultMinor: (-charge).toString(), netWorthMinor: (-charge).toString(), principalNetWorthMinor: '0' } }

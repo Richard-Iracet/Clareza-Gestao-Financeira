@@ -1,0 +1,1 @@
+const apply=process.argv.includes('--apply');if(!apply&&!process.argv.includes('--dry-run'))process.argv.push('--dry-run');if(apply)process.argv.splice(process.argv.indexOf('--apply'),1);await import('./run-financial-classification-shadow.mjs')
